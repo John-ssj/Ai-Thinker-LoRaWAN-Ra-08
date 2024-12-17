@@ -1,7 +1,7 @@
 /*!
  * \file      main.c
  *
- * \brief     LoRaMac classC device implementation
+ * \brief     LoRaMac classB device implementation
  *
  * \copyright Revised BSD License, see section \ref LICENSE.
  *
@@ -35,9 +35,9 @@
 #endif
 
 /*!
- * Defines the application data transmission duty cycle. 30s, value in [ms].
+ * Defines the application data transmission duty cycle. 5s, value in [ms].
  */
-#define APP_TX_DUTYCYCLE                            30000
+#define APP_TX_DUTYCYCLE                            5000
 
 /*!
  * Defines a random delay for application data transmission duty cycle. 1s,
@@ -185,7 +185,7 @@ static bool SendFrame( void )
     {
         return false;
     }
-
+    
     
     return true;
 }
@@ -276,7 +276,6 @@ static void McpsConfirm( McpsConfirm_t *mcpsConfirm )
  */
 static void McpsIndication( McpsIndication_t *mcpsIndication )
 {
-    int i = 0;
     if( mcpsIndication->Status != LORAMAC_EVENT_INFO_STATUS_OK )
     {
         return;
@@ -324,14 +323,6 @@ static void McpsIndication( McpsIndication_t *mcpsIndication )
     if( mcpsIndication->RxData == true )
     {
     }
-    
-    if(mcpsIndication->BufferSize) {
-        printf("Received: ");
-        for(i=0; i<mcpsIndication->BufferSize; i++) {
-            printf("%x ", mcpsIndication->Buffer[i]);
-        }
-    } // diff
-    printf("\r\n");
 }
 
 /*!
@@ -357,7 +348,7 @@ static void MlmeConfirm( MlmeConfirm_t *mlmeConfirm )
                 MlmeReq_t mlmeReq;
                 
                 printf("join failed\r\n");
-                // Join was not successful. Try to join again                
+                // Join was not successful. Try to join again
                 mlmeReq.Type = MLME_JOIN;
                 mlmeReq.Req.Join.DevEui = DevEui;
                 mlmeReq.Req.Join.AppEui = AppEui;
@@ -426,10 +417,6 @@ static void lwan_dev_params_update( void )
     mibReq.Type = MIB_CHANNELS_MASK;
     mibReq.Param.ChannelsMask = channelsMaskTemp;
     LoRaMacMibSetRequestConfirm(&mibReq);
-    
-    mibReq.Type = MIB_DEVICE_CLASS;
-    mibReq.Param.Class = CLASS_C;
-    LoRaMacMibSetRequestConfirm( &mibReq ); // diff
 }
 
 uint8_t BoardGetBatteryLevel( void )
@@ -448,7 +435,7 @@ int app_start( void )
 
     DeviceState = DEVICE_STATE_INIT;
 
-    printf("ClassC app start\r\n");
+    printf("ClassB app start\r\n");
     while( 1 )
     {
         switch( DeviceState )
@@ -551,6 +538,9 @@ int app_start( void )
             }
             case DEVICE_STATE_SLEEP:
             {
+                // Wake up through events
+                TimerLowPowerHandler( );
+                
                 // Process Radio IRQ
                 Radio.IrqProcess( );
                 break;
