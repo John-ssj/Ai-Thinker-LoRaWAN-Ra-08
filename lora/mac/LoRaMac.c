@@ -31,6 +31,7 @@ Maintainer: Miguel Luis ( Semtech ), Gregory Cristian ( Semtech ) and Daniel Jae
 #include "LoRaMacClassB.h"
 #include "LoRaMacCrypto.h"
 #include "log.h"  
+#include "stdio.h"
 #ifdef CONFIG_LWAN
 #include "lwan_config.h"    
 #endif
@@ -2886,6 +2887,9 @@ LoRaMacStatus_t SetTxContinuousWave1( uint16_t timeout, uint32_t frequency, uint
 LoRaMacStatus_t LoRaMacInitialization( LoRaMacPrimitives_t *primitives, LoRaMacCallback_t *callbacks,
                                        LoRaMacRegion_t region )
 {
+#ifdef MY_DEBUG2
+    printf("init LoRaMacInitialization\r\n");
+#endif
     GetPhyParams_t getPhy;
     PhyParam_t phyParam;
     LoRaMacClassBCallback_t classBCallbacks;
@@ -3291,6 +3295,9 @@ LoRaMacStatus_t LoRaMacMibGetRequestConfirm( MibRequestConfirm_t *mibGet )
 
 LoRaMacStatus_t LoRaMacMibSetRequestConfirm( MibRequestConfirm_t *mibSet )
 {
+#ifdef MY_DEBUG2
+    printf("init LoRaMacMibSetRequestConfirm 1\r\n");
+#endif
     LoRaMacStatus_t status = LORAMAC_STATUS_OK;
     ChanMaskSetParams_t chanMaskSet;
     VerifyParams_t verify;
@@ -3344,6 +3351,9 @@ LoRaMacStatus_t LoRaMacMibSetRequestConfirm( MibRequestConfirm_t *mibSet )
             break;
         }
         case MIB_PUBLIC_NETWORK: {
+#ifdef MY_DEBUG2
+            printf("init LoRaMacMibSetRequestConfirm MIB_PUBLIC_NETWORK\r\n");
+#endif
             PublicNetwork = mibSet->Param.EnablePublicNetwork;
             Radio.SetPublicNetwork(mibSet->Param.EnablePublicNetwork);
             break;
@@ -3539,6 +3549,9 @@ LoRaMacStatus_t LoRaMacMibSetRequestConfirm( MibRequestConfirm_t *mibSet )
         }
     }
 
+#ifdef MY_DEBUG2
+    printf("init LoRaMacMibSetRequestConfirm 2\r\n");
+#endif
     return status;
 }
 

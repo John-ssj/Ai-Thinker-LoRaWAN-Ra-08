@@ -24,6 +24,9 @@ Maintainer: Miguel Luis ( Semtech ), Gregory Cristian ( Semtech ) and Daniel Jae
 #include "LoRaMacClassBConfig.h"
 #include "LoRaMacCrypto.h"
 #include "LoRaMacConfirmQueue.h"
+#include <stdio.h>
+
+#define LORAMAC_CLASSB_ENABLED
 
 #ifdef LORAMAC_CLASSB_ENABLED
 /*!
@@ -205,8 +208,9 @@ static void RxBeaconSetup( TimerTime_t rxTime, bool activateDefaultChannel )
     rxBeaconSetup.Frequency = frequency;
 
     RegionRxBeaconSetup( *LoRaMacClassBParams.LoRaMacRegion, &rxBeaconSetup, &LoRaMacClassBParams.McpsIndication->RxDatarate );
-    LOG_PRINTF(LL_VDEBUG, "start rx beacon: %u, %u, (%llu), rxtime(%u)\r\n", (unsigned int)frequency, LoRaMacClassBParams.McpsIndication->RxDatarate, TimerGetCurrentTime( ), (unsigned int)rxBeaconSetup.RxTime);
-    
+#ifdef MY_DEBUG1
+    printf("start rx beacon: %u, %u, (%llu), rxtime(%u)\r\n", (unsigned int)frequency, LoRaMacClassBParams.McpsIndication->RxDatarate, TimerGetCurrentTime( ), (unsigned int)rxBeaconSetup.RxTime);
+#endif
     LoRaMacClassBParams.MlmeIndication->BeaconInfo.Frequency = frequency;
     LoRaMacClassBParams.MlmeIndication->BeaconInfo.Datarate = LoRaMacClassBParams.McpsIndication->RxDatarate;
 }
@@ -291,22 +295,40 @@ static uint16_t BeaconCrc( uint8_t *buffer, uint16_t length )
 
 static void GetTemperatureLevel( LoRaMacClassBCallback_t *callbacks, BeaconContext_t *beaconCtx )
 {
+#ifdef MY_DEBUG2
+    printf("init GetTemperatureLevel 1\r\n");
+#endif
     // Measure temperature, if available
     if( ( callbacks != NULL ) && ( callbacks->GetTemperatureLevel != NULL ) )
     {
+#ifdef MY_DEBUG2
+        printf("init GetTemperatureLevel 2\r\n");
+#endif
         beaconCtx->Temperature = callbacks->GetTemperatureLevel( );
     }
+#ifdef MY_DEBUG2
+    printf("init GetTemperatureLevel 3\r\n");
+#endif
 }
 
 static void InitClassBDefaults( void )
 {
+#ifdef MY_DEBUG2    
+    printf("init InitClassBDefaults 1\r\n");
+#endif
     // Init variables to default
     memset1( ( uint8_t* ) &BeaconCtx, 0, sizeof( BeaconContext_t ) );
     memset1( ( uint8_t* ) &PingSlotCtx, 0, sizeof( PingSlotContext_t ) );
 
+#ifdef MY_DEBUG2
+    printf("init InitClassBDefaults 2\r\n");
+#endif
     // Setup default temperature
     BeaconCtx.Temperature = 25.0;
     GetTemperatureLevel( &LoRaMacClassBCallbacks, &BeaconCtx );
+#ifdef MY_DEBUG2
+    printf("init InitClassBDefaults 3\r\n");
+#endif
 
     // Setup default states
     BeaconState = BEACON_STATE_ACQUISITION;
@@ -422,9 +444,11 @@ static uint16_t CalcPingPeriod( uint8_t pingNb )
 void LoRaMacClassBInit( LoRaMacClassBParams_t *classBParams, LoRaMacClassBCallback_t *callbacks )
 {
 #ifdef LORAMAC_CLASSB_ENABLED
+#ifdef MY_DEBUG2
+    printf("init LoRaMacClassBInit 1\r\n");
+#endif
     // Store callbacks
     LoRaMacClassBCallbacks = *callbacks;
-
     // Store parameter pointers
     LoRaMacClassBParams = *classBParams;
 
@@ -433,7 +457,13 @@ void LoRaMacClassBInit( LoRaMacClassBParams_t *classBParams, LoRaMacClassBCallba
     TimerInit( &PingSlotTimer, LoRaMacClassBPingSlotTimerEvent );
     TimerInit( &MulticastSlotTimer, LoRaMacClassBMulticastSlotTimerEvent );
 
+#ifdef MY_DEBUG2
+    printf("init LoRaMacClassBInit 2\r\n");
+#endif
     InitClassBDefaults( );
+#ifdef MY_DEBUG2
+    printf("init LoRaMacClassBInit 3\r\n");
+#endif
 #endif // LORAMAC_CLASSB_ENABLED
 }
 
@@ -502,18 +532,26 @@ bool LoRaMacClassBIsAcquisitionInProgress( void )
 
 void LoRaMacClassBBeaconTimerEvent( void )
 {
+#ifdef MY_DEBUG2
+    printf("in LoRaMacClassBBeaconTimerEvent 0\r\n");
+#endif
 #ifdef LORAMAC_CLASSB_ENABLED
     bool activateTimer = false;
     TimerTime_t beaconEventTime = 1;
     TimerTime_t currentTime = TimerGetCurrentTime( );
 
     TimerStop( &BeaconTimer );
-
+#ifdef MY_DEBUG2
+    printf("in LoRaMacClassBBeaconTimerEvent 1\r\n");
+#endif
     // Beacon state machine
     switch( BeaconState )
     {
         case BEACON_STATE_ACQUISITION_BY_TIME:
         {
+#ifdef MY_DEBUG1
+            printf("BeaconState: BEACON_STATE_ACQUISITION_BY_TIME\r\n");
+#endif
             activateTimer = true;
 
             if( BeaconCtx.Ctrl.AcquisitionPending == 1 )
@@ -569,6 +607,9 @@ void LoRaMacClassBBeaconTimerEvent( void )
         }
         case BEACON_STATE_ACQUISITION:
         {
+#ifdef MY_DEBUG1
+            printf("BeaconState: activateTimer\r\n");
+#endif
             activateTimer = true;
 
             if( BeaconCtx.Ctrl.AcquisitionPending == 1 )
@@ -725,8 +766,10 @@ void LoRaMacClassBBeaconTimerEvent( void )
     {
         TimerSetValue( &BeaconTimer, (uint32_t)beaconEventTime );
         TimerStart( &BeaconTimer );
-        LOG_PRINTF(LL_VDEBUG, "start beacon timer: %llu, current:(%llu), next_rx:(%llu)\r\n", 
+#ifdef MY_DEBUG1
+        printf("start beacon timer: %llu, current:(%llu), next_rx:(%llu)\r\n", 
             beaconEventTime, currentTime, BeaconCtx.NextBeaconRx);
+#endif
     }
 #endif // LORAMAC_CLASSB_ENABLED
 }

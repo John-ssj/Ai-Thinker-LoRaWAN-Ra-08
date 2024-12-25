@@ -522,6 +522,7 @@ bool RegionCN470RxConfig( RxConfigParams_t* rxConfig, int8_t* datarate )
     Radio.SetChannel( frequency );
 
     // Radio configuration
+    // 配置文件
     Radio.SetRxConfig( MODEM_LORA, rxConfig->Bandwidth, phyDr, 1, 0, 8, rxConfig->WindowTimeout, false, 0, false, 0, 0, true, rxConfig->RxContinuous );
 
     if( rxConfig->RepeaterSupport == true )

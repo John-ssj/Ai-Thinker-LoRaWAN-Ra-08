@@ -182,17 +182,17 @@
 /*!
  * Beacon frequency
  */
-#define CN470_BEACON_CHANNEL_FREQ                   508300000
+#define CN470_BEACON_CHANNEL_FREQ                   471500000
 
 /*!
  * Beacon frequency channel stepwidth
  */
-#define CN470_BEACON_CHANNEL_STEPWIDTH              200000
+#define CN470_BEACON_CHANNEL_STEPWIDTH              0
 
 /*!
  * Number of possible beacon channels
  */
-#define CN470_BEACON_NB_CHANNELS                    8
+#define CN470_BEACON_NB_CHANNELS                    1
 
 /*!
  * Payload size of a beacon frame

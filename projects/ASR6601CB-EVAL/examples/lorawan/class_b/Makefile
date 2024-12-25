@@ -30,7 +30,8 @@ $(PROJECT)_INC_PATH := inc \
     $(TREMO_SDK_PATH)/lora/mac/region
 
 $(PROJECT)_CFLAGS  := -Wall -Os -ffunction-sections -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -fsingle-precision-constant -std=gnu99 -fno-builtin-printf -fno-builtin-sprintf -fno-builtin-snprintf
-$(PROJECT)_DEFINES := -DCONFIG_DEBUG_UART=UART0 -DREGION_CN470
+$(PROJECT)_DEFINES := -DCONFIG_DEBUG_UART=UART0 -DREGION_CN470 -DLORAMAC_CLASSB_ENABLED -DMY_DEBUG1
+# -DMY_DEBUG1 -DMY_DEBUG2
 
 $(PROJECT)_LDFLAGS := -Wl,--gc-sections -Wl,--wrap=printf -Wl,--wrap=sprintf -Wl,--wrap=snprintf
 
