@@ -22,6 +22,7 @@
  */
 #include <math.h>
 #include <string.h>
+#include <stdio.h>
 #include "timer.h"
 #include "delay.h"
 #include "radio.h"
@@ -454,7 +455,7 @@ typedef struct
     bool Current;
 }RadioPublicNetwork_t;
 
-static RadioPublicNetwork_t RadioPublicNetwork = { false };
+static RadioPublicNetwork_t RadioPublicNetwork = { true };
 
 /*!
  * Radio callbacks variable
@@ -634,6 +635,16 @@ void RadioSetRxConfig( RadioModems_t modem, uint32_t bandwidth,
 {
 
     RxContinuous = rxContinuous;
+
+    printf("\r\nRadioSetRxConfig\r\n");
+    printf("bandwidth: %ld\r\n", bandwidth);
+    printf("datarate: %ld\r\n", datarate);
+    printf("coderate: %d\r\n", coderate);
+    printf("bandwidthAfc: %ld\r\n", bandwidthAfc);
+    printf("preambleLen: %d\r\n", preambleLen);
+    printf("symbTimeout: %d\r\n", symbTimeout);
+    printf("payloadLen: %d\r\n", payloadLen);
+    printf("rxContinuous: %d\r\n", rxContinuous);
 
     if( rxContinuous == true )
     {

@@ -287,6 +287,7 @@ void RegionCommonRxBeaconSetup( RegionCommonRxBeaconSetupParams_t* rxBeaconSetup
     // Setup radio
     Radio.SetRxConfig( MODEM_LORA, rxBeaconSetupParams->BeaconChannelBW, datarate,
                        1, 0, 10, rxBeaconSetupParams->SymbolTimeout, true, rxBeaconSetupParams->BeaconSize, false, 0, 0, false, rxContinuous );
+	// Radio.SetRxConfig(MODEM_LORA, 0, 10, 1, 0, 10, 0, false, 0, false, 0, 0, false, true);
 
     Radio.Rx( rxBeaconSetupParams->RxTime );
 }

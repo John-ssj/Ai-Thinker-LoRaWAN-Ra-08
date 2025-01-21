@@ -853,9 +853,11 @@ void RegionCN470RxBeaconSetup( RxBeaconSetup_t* rxBeaconSetup, uint8_t* outDr )
     regionCommonRxBeaconSetup.BeaconSize = CN470_BEACON_SIZE;
     regionCommonRxBeaconSetup.BeaconDatarate = CN470_BEACON_CHANNEL_DR;
     regionCommonRxBeaconSetup.BeaconChannelBW = CN470_BEACON_CHANNEL_BW;
-    regionCommonRxBeaconSetup.RxTime = rxBeaconSetup->RxTime;
+    // regionCommonRxBeaconSetup.RxTime = rxBeaconSetup->RxTime;
+    regionCommonRxBeaconSetup.RxTime = 0;
     regionCommonRxBeaconSetup.SymbolTimeout = rxBeaconSetup->SymbolTimeout;
 
+    // printf("RegionCN470RxBeaconSetup -- rxBeaconSetup->RxTime: %ld", rxBeaconSetup->RxTime);
     RegionCommonRxBeaconSetup( &regionCommonRxBeaconSetup );
 
     // Store downlink datarate

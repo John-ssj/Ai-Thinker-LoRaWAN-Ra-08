@@ -39,7 +39,7 @@
 
 #elif defined(REGION_CN470)
 
-#define RF_FREQUENCY 470000000 // Hz
+#define RF_FREQUENCY 471500000 // Hz
 
 #elif defined(REGION_CN779)
 
@@ -81,7 +81,7 @@
 								//  1: 250 kHz,
 								//  2: 500 kHz,
 								//  3: Reserved]
-#define LORA_SPREADING_FACTOR 7 // [SF7..SF12]
+#define LORA_SPREADING_FACTOR 10 // [SF7..SF12]
 #define LORA_CODINGRATE 1		// [1: 4/5,
 								//  2: 4/6,
 								//  3: 4/7,
@@ -208,7 +208,7 @@ int Ra08KitLoraTestStart(void)
 	Radio.SetRxConfig(MODEM_LORA, LORA_BANDWIDTH, LORA_SPREADING_FACTOR,
 					  LORA_CODINGRATE, 0, LORA_PREAMBLE_LENGTH,
 					  LORA_SYMBOL_TIMEOUT, LORA_FIX_LENGTH_PAYLOAD_ON,
-					  0, true, 0, 0, LORA_IQ_INVERSION_ON, true);
+					  0, false, 0, 0, LORA_IQ_INVERSION_ON, true);
 
 	printf("Lora Mode\r\nversion:0.0.0\r\ntx power:%d\r\nSF:%d\r\nCR:4/%d\r\n", TX_OUTPUT_POWER, LORA_SPREADING_FACTOR, LORA_CODINGRATE + 4);
 	switch (LORA_BANDWIDTH)
@@ -250,7 +250,13 @@ int Ra08KitLoraTestStart(void)
 		switch (State)
 		{
 		case RX:
-			printf("[%s()-%d]Rx done,rssi:%d,len:%d,ledStatus:%d,data:%s\r\n", __func__, __LINE__, RssiValue, ledStatus, BufferSize, Buffer);
+			// printf("[%s()-%d]Rx done,rssi:%d,len:%d,ledStatus:%d,data:%s\r\n", __func__, __LINE__, RssiValue, ledStatus, BufferSize, Buffer);
+			printf("[%s()-%d] Rx done, rssi: %d, len: %d, ledStatus: %d, data: ", __func__, __LINE__, RssiValue, BufferSize, ledStatus);
+			for (int i = 0; i < BufferSize; i++) {
+				printf("%02X ", Buffer[i]);
+			}
+			printf("\r\n");
+
 			switch (ledStatus)
 			{
 			case 0:

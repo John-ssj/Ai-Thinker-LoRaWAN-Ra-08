@@ -26,7 +26,7 @@ Maintainer: Miguel Luis ( Semtech ), Gregory Cristian ( Semtech ) and Daniel Jae
 #include "LoRaMacConfirmQueue.h"
 #include <stdio.h>
 
-#define LORAMAC_CLASSB_ENABLED
+// #define LORAMAC_CLASSB_ENABLED
 
 #ifdef LORAMAC_CLASSB_ENABLED
 /*!
@@ -153,6 +153,11 @@ static uint32_t CalcDownlinkChannelAndFrequency( uint32_t devAddr, TimerTime_t b
  */
 static void RxBeaconSetup( TimerTime_t rxTime, bool activateDefaultChannel )
 {
+
+#ifdef MY_DEBUG1
+    printf("\r\n---------------\r\nRxBeaconSetup\r\nrxTime: %lld\r\n", rxTime);
+#endif
+
     RxBeaconSetup_t rxBeaconSetup;
     uint32_t frequency = 0;
     RxConfigParams_t beaconRxConfig;
@@ -204,7 +209,8 @@ static void RxBeaconSetup( TimerTime_t rxTime, bool activateDefaultChannel )
     }
 
     rxBeaconSetup.SymbolTimeout = windowTimeout;
-    rxBeaconSetup.RxTime = (uint32_t)rxTime;
+    // rxBeaconSetup.RxTime = (uint32_t)rxTime;
+    rxBeaconSetup.RxTime = 0;
     rxBeaconSetup.Frequency = frequency;
 
     RegionRxBeaconSetup( *LoRaMacClassBParams.LoRaMacRegion, &rxBeaconSetup, &LoRaMacClassBParams.McpsIndication->RxDatarate );
@@ -483,6 +489,7 @@ void LoRaMacClassBSetBeaconState( BeaconState_t beaconState )
         {
            BeaconState = beaconState;
         }
+        BeaconState = beaconState;
     }
     else
     {
@@ -558,11 +565,13 @@ void LoRaMacClassBBeaconTimerEvent( void )
             {
                 Radio.Sleep();
                 BeaconState = BEACON_STATE_LOST;
+                printf("LoRaMacClassBBeaconTimerEvent: 1\r\n");
             }
             else
             {
                 // Default symbol timeouts
                 ResetWindowTimeout( );
+                printf("LoRaMacClassBBeaconTimerEvent: 2\r\n");
 
                 if( BeaconCtx.Ctrl.BeaconDelaySet == 1 )
                 {
@@ -571,6 +580,7 @@ void LoRaMacClassBBeaconTimerEvent( void )
                         if( BeaconCtx.NextBeaconRx > currentTime )
                         {
                             beaconEventTime = TimerTempCompensation( BeaconCtx.NextBeaconRx - currentTime, BeaconCtx.Temperature );
+                            printf("LoRaMacClassBBeaconTimerEvent: 3\r\n");
                         }
                         else
                         {
@@ -578,11 +588,14 @@ void LoRaMacClassBBeaconTimerEvent( void )
                             BeaconCtx.Ctrl.BeaconDelaySet = 0;
                             BeaconCtx.Ctrl.BeaconChannelSet = 0;
                             BeaconState = BEACON_STATE_ACQUISITION;
+                            printf("LoRaMacClassBBeaconTimerEvent: 4\r\n");
                         }
                         BeaconCtx.BeaconTimingDelay = 0;
+                        printf("LoRaMacClassBBeaconTimerEvent: 5\r\n");
                     }
                     else
                     {
+                        printf("LoRaMacClassBBeaconTimerEvent: 6\r\n");
                         activateTimer = false;
 
                         // Reset status provides by BeaconTimingAns
@@ -597,27 +610,31 @@ void LoRaMacClassBBeaconTimerEvent( void )
                 }
                 else
                 {
+                    printf("LoRaMacClassBBeaconTimerEvent: 7\r\n");
                     BeaconCtx.NextBeaconRx = 0;
                     BeaconCtx.BeaconTimingDelay = 0;
 
                     BeaconState = BEACON_STATE_ACQUISITION;
                 }
             }
+#ifdef MY_DEBUG1
+            printf("after BEACON_STATE_ACQUISITION_BY_TIME, BeaconState: eBeaconState[%d]\r\n", BeaconState);
+#endif
             break;
         }
         case BEACON_STATE_ACQUISITION:
         {
 #ifdef MY_DEBUG1
-            printf("BeaconState: activateTimer\r\n");
+            printf("BeaconState: BEACON_STATE_ACQUISITION\r\n");
 #endif
             activateTimer = true;
 
-            if( BeaconCtx.Ctrl.AcquisitionPending == 1 )
-            {
-                Radio.Sleep();
-                BeaconState = BEACON_STATE_LOST;
-            }
-            else
+            // if( BeaconCtx.Ctrl.AcquisitionPending == 1 )
+            // {
+            //     Radio.Sleep();
+            //     BeaconState = BEACON_STATE_LOST;
+            // }
+            // else
             {
                 // Default symbol timeouts
                 ResetWindowTimeout( );
@@ -1032,6 +1049,10 @@ bool LoRaMacClassBRxBeacon( uint8_t *payload, uint16_t size )
     getPhy.Attribute = PHY_BEACON_FORMAT;
     phyParam = RegionGetPhyParam( *LoRaMacClassBParams.LoRaMacRegion, &getPhy );
 
+    // beacon recieve
+#ifdef MY_DEBUG2
+    printf("in LoRaMacClassBRxBeacon\r\n");
+#endif
     // Verify if we are in the state where we expect a beacon
     if( ( BeaconState == BEACON_STATE_RX ) || ( BeaconCtx.Ctrl.AcquisitionPending == 1 ) )
     {

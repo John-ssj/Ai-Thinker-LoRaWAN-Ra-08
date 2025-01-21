@@ -543,6 +543,7 @@ static void MlmeConfirm( MlmeConfirm_t *mlmeConfirm )
         {
 #ifdef MY_DEBUG1
             printf("MlmeConfirm -- MLME_PING_SLOT_INFO\r\n");
+            printf("mlmeConfirm->Status: %d\r\n", mlmeConfirm->Status);
 #endif
             if( mlmeConfirm->Status == LORAMAC_EVENT_INFO_STATUS_OK )
             {
