@@ -565,6 +565,7 @@ void RadioSetModem( RadioModems_t modem )
 
 void RadioSetChannel( uint32_t freq )
 {
+    printf("\r\nRadioSetChannel: %ld\r\n", freq);
     SX126xSetRfFrequency( freq );
 }
 
